@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Newsletter Tutorial | Learn to Code</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Gmail Newsletter Tutorial</div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="tutorial.html">Step-by-Step</a></li>
+            <li><a href="code-breakdown.html">Code Breakdown</a></li>
+            <li><a href="playground.html">Live Playground</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Build a Free Gmail Newsletter</h1>
+            <p class="subtitle">Send emails to your subscribers using Google Sheets + Apps Script</p>
+            <p class="hero-note">Perfect for coding students, small projects, and reaching up to 100 people/day - completely free!</p>
+        </section>
+
+        <section class="why-section">
+            <h2>Why This Approach?</h2>
+            <div class="comparison-table">
+                <div class="compare-item good">
+                    <h4>Google Apps Script (This Tutorial)</h4>
+                    <ul>
+                        <li>100% Free</li>
+                        <li>No credit card needed</li>
+                        <li>100 emails/day (free Gmail)</li>
+                        <li>Uses your existing Gmail</li>
+                        <li>Subscribers stored in Google Sheets</li>
+                        <li>You learn real coding!</li>
+                    </ul>
+                </div>
+                <div class="compare-item">
+                    <h4>Paid Services (Mailchimp, etc.)</h4>
+                    <ul>
+                        <li>Free tier limited</li>
+                        <li>Often needs credit card</li>
+                        <li>More features than you need</li>
+                        <li>Less learning opportunity</li>
+                        <li>Vendor lock-in</li>
+                        <li>Overkill for small lists</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="intro-cards">
+            <div class="card">
+                <div class="card-icon">1</div>
+                <h3>Set Up Google Sheet</h3>
+                <p>Create a spreadsheet to store your subscribers' emails and track who you've sent to.</p>
+                <a href="tutorial.html#step1" class="btn">Start Here</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">2</div>
+                <h3>Write the Script</h3>
+                <p>Learn Google Apps Script to send personalized emails from your Gmail account.</p>
+                <a href="tutorial.html#step2" class="btn">Learn Script</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">3</div>
+                <h3>Build Signup Form</h3>
+                <p>Create an HTML form that adds subscribers directly to your Google Sheet.</p>
+                <a href="tutorial.html#step3" class="btn">Build Form</a>
+            </div>
+        </section>
+
+        <section class="what-youll-build">
+            <h2>What You'll Build</h2>
+            <div class="build-preview">
+                <div class="preview-item">
+                    <h4>Google Sheet (Your Database)</h4>
+                    <div class="sheet-preview">
+                        <div class="sheet-row header">
+                            <span>Email</span>
+                            <span>Name</span>
+                            <span>Date Joined</span>
+                            <span>Status</span>
+                        </div>
+                        <div class="sheet-row">
+                            <span>alex@email.com</span>
+                            <span>Alex</span>
+                            <span>2024-01-15</span>
+                            <span class="status-active">Active</span>
+                        </div>
+                        <div class="sheet-row">
+                            <span>jordan@email.com</span>
+                            <span>Jordan</span>
+                            <span>2024-01-16</span>
+                            <span class="status-active">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-item">
+                    <h4>Signup Form</h4>
+                    <div class="demo-newsletter">
+                        <h3>Join My Newsletter</h3>
+                        <form class="demo-form" onsubmit="return demoSubmit(event)">
+                            <input type="text" placeholder="Your name" required>
+                            <input type="email" placeholder="Your email" required>
+                            <button type="submit">Subscribe</button>
+                        </form>
+                        <p class="demo-message" id="demoMessage"></p>
+                    </div>
+                </div>
+
+                <div class="preview-item">
+                    <h4>Send Emails with One Click</h4>
+                    <div class="script-preview">
+                        <div class="script-menu">
+                            <span>Newsletter Menu</span>
+                        </div>
+                        <div class="script-buttons">
+                            <button class="script-btn" onclick="alert('In the real tutorial, this sends your newsletter!')">Send Newsletter</button>
+                            <button class="script-btn secondary">Send Test Email</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="requirements-section">
+            <h2>What You Need</h2>
+            <ul class="checklist">
+                <li>
+                    <span class="check">&#10003;</span>
+                    <span>A Google account (Gmail)</span>
+                </li>
+                <li>
+                    <span class="check">&#10003;</span>
+                    <span>A web browser</span>
+                </li>
+                <li>
+                    <span class="check">&#10003;</span>
+                    <span>Basic understanding of HTML (we'll teach the rest!)</span>
+                </li>
+            </ul>
+            <div class="tip-box">
+                <h4>Email Limits</h4>
+                <p><strong>Free Gmail:</strong> 100 emails/day | <strong>Google Workspace:</strong> 1,500 emails/day<br>
+                Perfect for students, small clubs, or reaching interested contacts!</p>
+            </div>
+        </section>
+
+        <section class="start-section">
+            <a href="tutorial.html" class="btn btn-large">Start the Tutorial</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>Learn to Code Class | Gmail Newsletter Tutorial</p>
+    </footer>
+
+    <script>
+        function demoSubmit(event) {
+            event.preventDefault();
+            const message = document.getElementById('demoMessage');
+            message.textContent = 'You would be subscribed! (This is just a demo)';
+            message.style.color = '#27ae60';
+            event.target.reset();
+            return false;
+        }
+    </script>
+</body>
+</html>

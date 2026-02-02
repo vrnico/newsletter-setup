@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step-by-Step Tutorial | Gmail Newsletter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Gmail Newsletter Tutorial</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="tutorial.html" class="active">Step-by-Step</a></li>
+            <li><a href="code-breakdown.html">Code Breakdown</a></li>
+            <li><a href="playground.html">Live Playground</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Step-by-Step Tutorial</h1>
+            <p class="subtitle">Set up your free Gmail newsletter in about 20 minutes</p>
+        </section>
+
+        <div class="tutorial-content">
+            <!-- PART 1: GOOGLE SHEET -->
+            <div class="part-header" id="step1">
+                <h2>Part 1: Set Up Your Google Sheet</h2>
+                <p>First, we'll create a spreadsheet to store subscriber emails</p>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1.1</div>
+                    <h2>Create a New Google Sheet</h2>
+                </div>
+                <ol class="instruction-list">
+                    <li>Go to <a href="https://sheets.google.com" target="_blank">sheets.google.com</a></li>
+                    <li>Click the <strong>+ Blank</strong> button to create a new spreadsheet</li>
+                    <li>Name it "My Newsletter Subscribers" (click on "Untitled spreadsheet" at the top)</li>
+                </ol>
+
+                <div class="screenshot-placeholder">
+                    <p>Your Google Sheet should look like this:</p>
+                    <div class="sheet-preview large">
+                        <div class="sheet-row header">
+                            <span>A</span>
+                            <span>B</span>
+                            <span>C</span>
+                            <span>D</span>
+                        </div>
+                        <div class="sheet-row">
+                            <span>email</span>
+                            <span>name</span>
+                            <span>dateJoined</span>
+                            <span>status</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1.2</div>
+                    <h2>Add Column Headers</h2>
+                </div>
+                <p>In row 1, add these headers (one per column):</p>
+                <div class="code-block">
+<pre>Column A: email
+Column B: name
+Column C: dateJoined
+Column D: status</pre>
+                </div>
+
+                <div class="tip-box">
+                    <h4>Why these columns?</h4>
+                    <p><strong>email</strong> - Where we send the newsletter<br>
+                    <strong>name</strong> - To personalize emails ("Hi Alex!")<br>
+                    <strong>dateJoined</strong> - Track when they subscribed<br>
+                    <strong>status</strong> - Active or Unsubscribed</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1.3</div>
+                    <h2>Add Test Subscribers</h2>
+                </div>
+                <p>Add 1-2 test emails (use your own email so you can test!):</p>
+                <div class="sheet-preview large">
+                    <div class="sheet-row header">
+                        <span>email</span>
+                        <span>name</span>
+                        <span>dateJoined</span>
+                        <span>status</span>
+                    </div>
+                    <div class="sheet-row">
+                        <span>your.email@gmail.com</span>
+                        <span>Your Name</span>
+                        <span>2024-01-15</span>
+                        <span>Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 2: APPS SCRIPT -->
+            <div class="part-header" id="step2">
+                <h2>Part 2: Create the Apps Script</h2>
+                <p>Now we'll write the code that sends emails</p>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2.1</div>
+                    <h2>Open Apps Script</h2>
+                </div>
+                <ol class="instruction-list">
+                    <li>In your Google Sheet, click <strong>Extensions</strong> in the menu bar</li>
+                    <li>Click <strong>Apps Script</strong></li>
+                    <li>A new tab will open with the script editor</li>
+                    <li>Delete any code that's already there</li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2.2</div>
+                    <h2>Paste the Newsletter Code</h2>
+                </div>
+                <p>Copy and paste this entire code into the script editor:</p>
+                <div class="code-block">
+<pre><code><span class="code-comment">/**
+ * GMAIL NEWSLETTER SCRIPT
+ * This script sends emails to all active subscribers in your Google Sheet
+ */</span>
+
+<span class="code-comment">// Configuration - EDIT THESE!</span>
+<span class="code-keyword">const</span> CONFIG = {
+  senderName: <span class="code-string">"Your Name"</span>,           <span class="code-comment">// Your name (appears in "From")</span>
+  replyTo: <span class="code-string">"your.email@gmail.com"</span>,   <span class="code-comment">// Your email address</span>
+  sheetName: <span class="code-string">"Sheet1"</span>                 <span class="code-comment">// Name of the sheet tab</span>
+};
+
+<span class="code-comment">/**
+ * Sends newsletter to all active subscribers
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">sendNewsletter</span>() {
+  <span class="code-comment">// Get the spreadsheet and data</span>
+  <span class="code-keyword">const</span> sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+  <span class="code-keyword">const</span> data = sheet.getDataRange().getValues();
+
+  <span class="code-comment">// Email content - EDIT THIS FOR EACH NEWSLETTER!</span>
+  <span class="code-keyword">const</span> subject = <span class="code-string">"My Newsletter - Issue #1"</span>;
+  <span class="code-keyword">const</span> htmlBody = <span class="code-string">`
+    &lt;h1&gt;Welcome to My Newsletter!&lt;/h1&gt;
+    &lt;p&gt;Hi {{NAME}},&lt;/p&gt;
+    &lt;p&gt;Thanks for subscribing! Here's what's new:&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Update #1: Something exciting&lt;/li&gt;
+      &lt;li&gt;Update #2: Another cool thing&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;p&gt;Best regards,&lt;br&gt;${CONFIG.senderName}&lt;/p&gt;
+    &lt;hr&gt;
+    &lt;small&gt;You received this because you subscribed. Reply to unsubscribe.&lt;/small&gt;
+  `</span>;
+
+  <span class="code-keyword">let</span> sentCount = 0;
+  <span class="code-keyword">let</span> errors = [];
+
+  <span class="code-comment">// Loop through each row (skip header row)</span>
+  <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = 1; i < data.length; i++) {
+    <span class="code-keyword">const</span> email = data[i][0];
+    <span class="code-keyword">const</span> name = data[i][1] || <span class="code-string">"there"</span>;
+    <span class="code-keyword">const</span> status = data[i][3];
+
+    <span class="code-comment">// Only send to active subscribers with valid emails</span>
+    <span class="code-keyword">if</span> (status === <span class="code-string">"Active"</span> && email && email.includes(<span class="code-string">"@"</span>)) {
+      <span class="code-keyword">try</span> {
+        <span class="code-comment">// Personalize the email</span>
+        <span class="code-keyword">const</span> personalizedBody = htmlBody.replace(<span class="code-string">"{{NAME}}"</span>, name);
+
+        <span class="code-comment">// Send the email</span>
+        GmailApp.sendEmail(email, subject, <span class="code-string">""</span>, {
+          htmlBody: personalizedBody,
+          name: CONFIG.senderName,
+          replyTo: CONFIG.replyTo
+        });
+
+        sentCount++;
+      } <span class="code-keyword">catch</span> (e) {
+        errors.push(email + <span class="code-string">": "</span> + e.message);
+      }
+    }
+  }
+
+  <span class="code-comment">// Show results</span>
+  <span class="code-keyword">let</span> message = <span class="code-string">`Newsletter sent to ${sentCount} subscribers!`</span>;
+  <span class="code-keyword">if</span> (errors.length > 0) {
+    message += <span class="code-string">`\n\nErrors:\n${errors.join("\n")}`</span>;
+  }
+  SpreadsheetApp.getUi().alert(message);
+}
+
+<span class="code-comment">/**
+ * Sends a test email to yourself
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">sendTestEmail</span>() {
+  <span class="code-keyword">const</span> testEmail = CONFIG.replyTo;
+  <span class="code-keyword">const</span> subject = <span class="code-string">"[TEST] My Newsletter"</span>;
+  <span class="code-keyword">const</span> htmlBody = <span class="code-string">`
+    &lt;h1&gt;This is a test email!&lt;/h1&gt;
+    &lt;p&gt;Hi {{NAME}},&lt;/p&gt;
+    &lt;p&gt;If you can read this, your newsletter is working!&lt;/p&gt;
+    &lt;p&gt;Best regards,&lt;br&gt;${CONFIG.senderName}&lt;/p&gt;
+  `</span>.replace(<span class="code-string">"{{NAME}}"</span>, <span class="code-string">"Test User"</span>);
+
+  GmailApp.sendEmail(testEmail, subject, <span class="code-string">""</span>, {
+    htmlBody: htmlBody,
+    name: CONFIG.senderName
+  });
+
+  SpreadsheetApp.getUi().alert(<span class="code-string">`Test email sent to ${testEmail}!`</span>);
+}
+
+<span class="code-comment">/**
+ * Adds a custom menu to the spreadsheet
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">onOpen</span>() {
+  SpreadsheetApp.getUi()
+    .createMenu(<span class="code-string">'Newsletter'</span>)
+    .addItem(<span class="code-string">'Send Test Email'</span>, <span class="code-string">'sendTestEmail'</span>)
+    .addItem(<span class="code-string">'Send Newsletter to All'</span>, <span class="code-string">'sendNewsletter'</span>)
+    .addToUi();
+}
+
+<span class="code-comment">/**
+ * Handles form submissions from your website
+ * This runs automatically when someone submits the form
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">doPost</span>(e) {
+  <span class="code-keyword">try</span> {
+    <span class="code-keyword">const</span> sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+    <span class="code-keyword">const</span> data = JSON.parse(e.postData.contents);
+
+    <span class="code-comment">// Add new subscriber to sheet</span>
+    sheet.appendRow([
+      data.email,
+      data.name,
+      <span class="code-keyword">new</span> Date().toISOString().split(<span class="code-string">'T'</span>)[0],
+      <span class="code-string">"Active"</span>
+    ]);
+
+    <span class="code-keyword">return</span> ContentService.createTextOutput(JSON.stringify({
+      success: <span class="code-keyword">true</span>,
+      message: <span class="code-string">"Subscribed successfully!"</span>
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } <span class="code-keyword">catch</span> (error) {
+    <span class="code-keyword">return</span> ContentService.createTextOutput(JSON.stringify({
+      success: <span class="code-keyword">false</span>,
+      message: error.message
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+<span class="code-comment">// For GET requests (testing)</span>
+<span class="code-keyword">function</span> <span class="code-function">doGet</span>() {
+  <span class="code-keyword">return</span> ContentService.createTextOutput(<span class="code-string">"Newsletter API is running!"</span>);
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2.3</div>
+                    <h2>Update the Configuration</h2>
+                </div>
+                <p>At the top of the code, find the CONFIG section and update it with your info:</p>
+                <div class="code-block">
+<pre><code><span class="code-keyword">const</span> CONFIG = {
+  senderName: <span class="code-string">"Your Actual Name"</span>,        <span class="code-comment">// Change this!</span>
+  replyTo: <span class="code-string">"your.actual@gmail.com"</span>,     <span class="code-comment">// Change this!</span>
+  sheetName: <span class="code-string">"Sheet1"</span>                    <span class="code-comment">// Change if your sheet tab has a different name</span>
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2.4</div>
+                    <h2>Save and Run</h2>
+                </div>
+                <ol class="instruction-list">
+                    <li>Click the <strong>Save</strong> button (floppy disk icon) or press Ctrl+S</li>
+                    <li>Name the project "Newsletter Script" when prompted</li>
+                    <li>Click the function dropdown (says "sendNewsletter") and select <strong>onOpen</strong></li>
+                    <li>Click <strong>Run</strong></li>
+                    <li>You'll see an "Authorization required" popup - click <strong>Review Permissions</strong></li>
+                    <li>Select your Google account</li>
+                    <li>Click <strong>Advanced</strong>, then <strong>Go to Newsletter Script (unsafe)</strong></li>
+                    <li>Click <strong>Allow</strong></li>
+                </ol>
+
+                <div class="warning-box">
+                    <h4>Why "unsafe"?</h4>
+                    <p>Google shows this warning because the script isn't verified. Since YOU wrote it, you know it's safe. This is normal for personal scripts!</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2.5</div>
+                    <h2>Test It!</h2>
+                </div>
+                <ol class="instruction-list">
+                    <li>Go back to your Google Sheet</li>
+                    <li>Refresh the page</li>
+                    <li>You should see a new <strong>Newsletter</strong> menu in the menu bar!</li>
+                    <li>Click <strong>Newsletter</strong> > <strong>Send Test Email</strong></li>
+                    <li>Check your inbox - you should receive a test email!</li>
+                </ol>
+
+                <div class="tip-box">
+                    <h4>Success!</h4>
+                    <p>If you got the test email, your newsletter system is working! You can now edit the email content in the <code>sendNewsletter</code> function and send to all subscribers.</p>
+                </div>
+            </div>
+
+            <!-- PART 3: SIGNUP FORM -->
+            <div class="part-header" id="step3">
+                <h2>Part 3: Create a Signup Form</h2>
+                <p>Let people subscribe through your website</p>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">3.1</div>
+                    <h2>Deploy as Web App</h2>
+                </div>
+                <p>To let your website add subscribers, you need to deploy the script:</p>
+                <ol class="instruction-list">
+                    <li>In Apps Script, click <strong>Deploy</strong> > <strong>New deployment</strong></li>
+                    <li>Click the gear icon and select <strong>Web app</strong></li>
+                    <li>Set <strong>Execute as</strong>: "Me"</li>
+                    <li>Set <strong>Who has access</strong>: "Anyone"</li>
+                    <li>Click <strong>Deploy</strong></li>
+                    <li><strong>Copy the Web app URL</strong> - you'll need this!</li>
+                </ol>
+
+                <div class="code-block">
+<pre>Your URL will look like:
+https://script.google.com/macros/s/XXXXX.../exec</pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">3.2</div>
+                    <h2>Create the HTML Signup Form</h2>
+                </div>
+                <p>Create a new HTML file for your signup form. Replace <code>YOUR_SCRIPT_URL</code> with your deployed URL:</p>
+                <div class="code-block">
+<pre><code><span class="code-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="code-tag">&lt;html</span> <span class="code-attr">lang</span>=<span class="code-string">"en"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;head&gt;</span>
+    <span class="code-tag">&lt;meta</span> <span class="code-attr">charset</span>=<span class="code-string">"UTF-8"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;meta</span> <span class="code-attr">name</span>=<span class="code-string">"viewport"</span> <span class="code-attr">content</span>=<span class="code-string">"width=device-width, initial-scale=1.0"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;title&gt;</span>Subscribe to Newsletter<span class="code-tag">&lt;/title&gt;</span>
+    <span class="code-tag">&lt;style&gt;</span>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        .subtitle { color: #666; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
+        button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .message { margin-top: 20px; padding: 15px; border-radius: 8px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .hidden { display: none; }
+    <span class="code-tag">&lt;/style&gt;</span>
+<span class="code-tag">&lt;/head&gt;</span>
+<span class="code-tag">&lt;body&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"container"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;h1&gt;</span>Join My Newsletter<span class="code-tag">&lt;/h1&gt;</span>
+        <span class="code-tag">&lt;p</span> <span class="code-attr">class</span>=<span class="code-string">"subtitle"</span><span class="code-tag">&gt;</span>Get updates delivered to your inbox!<span class="code-tag">&lt;/p&gt;</span>
+
+        <span class="code-tag">&lt;form</span> <span class="code-attr">id</span>=<span class="code-string">"subscribeForm"</span><span class="code-tag">&gt;</span>
+            <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"form-group"</span><span class="code-tag">&gt;</span>
+                <span class="code-tag">&lt;label</span> <span class="code-attr">for</span>=<span class="code-string">"name"</span><span class="code-tag">&gt;</span>Your Name<span class="code-tag">&lt;/label&gt;</span>
+                <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-string">"text"</span> <span class="code-attr">id</span>=<span class="code-string">"name"</span> <span class="code-attr">placeholder</span>=<span class="code-string">"Enter your name"</span> <span class="code-attr">required</span><span class="code-tag">&gt;</span>
+            <span class="code-tag">&lt;/div&gt;</span>
+            <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"form-group"</span><span class="code-tag">&gt;</span>
+                <span class="code-tag">&lt;label</span> <span class="code-attr">for</span>=<span class="code-string">"email"</span><span class="code-tag">&gt;</span>Email Address<span class="code-tag">&lt;/label&gt;</span>
+                <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-string">"email"</span> <span class="code-attr">id</span>=<span class="code-string">"email"</span> <span class="code-attr">placeholder</span>=<span class="code-string">"you@example.com"</span> <span class="code-attr">required</span><span class="code-tag">&gt;</span>
+            <span class="code-tag">&lt;/div&gt;</span>
+            <span class="code-tag">&lt;button</span> <span class="code-attr">type</span>=<span class="code-string">"submit"</span> <span class="code-attr">id</span>=<span class="code-string">"submitBtn"</span><span class="code-tag">&gt;</span>Subscribe<span class="code-tag">&lt;/button&gt;</span>
+        <span class="code-tag">&lt;/form&gt;</span>
+
+        <span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-string">"message"</span> <span class="code-attr">class</span>=<span class="code-string">"message hidden"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+
+    <span class="code-tag">&lt;script&gt;</span>
+        <span class="code-comment">// IMPORTANT: Replace this with YOUR Apps Script URL!</span>
+        <span class="code-keyword">const</span> SCRIPT_URL = <span class="code-string">'YOUR_SCRIPT_URL_HERE'</span>;
+
+        document.getElementById(<span class="code-string">'subscribeForm'</span>).addEventListener(<span class="code-string">'submit'</span>, <span class="code-keyword">async function</span>(e) {
+            e.preventDefault();
+
+            <span class="code-keyword">const</span> submitBtn = document.getElementById(<span class="code-string">'submitBtn'</span>);
+            <span class="code-keyword">const</span> messageDiv = document.getElementById(<span class="code-string">'message'</span>);
+
+            <span class="code-comment">// Get form values</span>
+            <span class="code-keyword">const</span> name = document.getElementById(<span class="code-string">'name'</span>).value;
+            <span class="code-keyword">const</span> email = document.getElementById(<span class="code-string">'email'</span>).value;
+
+            <span class="code-comment">// Show loading state</span>
+            submitBtn.disabled = <span class="code-keyword">true</span>;
+            submitBtn.textContent = <span class="code-string">'Subscribing...'</span>;
+
+            <span class="code-keyword">try</span> {
+                <span class="code-keyword">const</span> response = <span class="code-keyword">await</span> fetch(SCRIPT_URL, {
+                    method: <span class="code-string">'POST'</span>,
+                    mode: <span class="code-string">'no-cors'</span>,
+                    headers: { <span class="code-string">'Content-Type'</span>: <span class="code-string">'application/json'</span> },
+                    body: JSON.stringify({ name, email })
+                });
+
+                <span class="code-comment">// Show success (no-cors doesn't return response body)</span>
+                messageDiv.className = <span class="code-string">'message success'</span>;
+                messageDiv.textContent = <span class="code-string">'Thanks for subscribing! Check your inbox.'</span>;
+                <span class="code-keyword">this</span>.reset();
+
+            } <span class="code-keyword">catch</span> (error) {
+                messageDiv.className = <span class="code-string">'message error'</span>;
+                messageDiv.textContent = <span class="code-string">'Something went wrong. Please try again.'</span>;
+            }
+
+            <span class="code-comment">// Reset button</span>
+            submitBtn.disabled = <span class="code-keyword">false</span>;
+            submitBtn.textContent = <span class="code-string">'Subscribe'</span>;
+        });
+    <span class="code-tag">&lt;/script&gt;</span>
+<span class="code-tag">&lt;/body&gt;</span>
+<span class="code-tag">&lt;/html&gt;</span></code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">3.3</div>
+                    <h2>Test the Form</h2>
+                </div>
+                <ol class="instruction-list">
+                    <li>Save the HTML file</li>
+                    <li>Open it in your browser</li>
+                    <li>Fill out the form and click Subscribe</li>
+                    <li>Check your Google Sheet - the new subscriber should appear!</li>
+                </ol>
+
+                <div class="tip-box">
+                    <h4>Hosting Your Form</h4>
+                    <p>You can host this form for free on:<br>
+                    <strong>GitHub Pages</strong> - Free, great for learning<br>
+                    <strong>Netlify</strong> - Free, easy drag & drop<br>
+                    <strong>Your own website</strong> - Add the form to any page</p>
+                </div>
+            </div>
+
+            <!-- PART 4: SENDING -->
+            <div class="part-header">
+                <h2>Part 4: Send Your First Newsletter!</h2>
+                <p>You're ready to send</p>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">4.1</div>
+                    <h2>Edit the Email Content</h2>
+                </div>
+                <p>In Apps Script, find the <code>sendNewsletter</code> function and edit these parts:</p>
+                <div class="code-block">
+<pre><code><span class="code-comment">// Change the subject line</span>
+<span class="code-keyword">const</span> subject = <span class="code-string">"Your Newsletter Title Here"</span>;
+
+<span class="code-comment">// Edit the HTML content</span>
+<span class="code-keyword">const</span> htmlBody = <span class="code-string">`
+  &lt;h1&gt;Your Headline&lt;/h1&gt;
+  &lt;p&gt;Hi {{NAME}},&lt;/p&gt;
+  &lt;p&gt;Write your content here...&lt;/p&gt;
+`</span>;</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">4.2</div>
+                    <h2>Send It!</h2>
+                </div>
+                <ol class="instruction-list">
+                    <li>Go to your Google Sheet</li>
+                    <li>Click <strong>Newsletter</strong> > <strong>Send Test Email</strong> first</li>
+                    <li>Check the test email looks good</li>
+                    <li>When ready, click <strong>Newsletter</strong> > <strong>Send Newsletter to All</strong></li>
+                    <li>A popup will show how many emails were sent!</li>
+                </ol>
+
+                <div class="warning-box">
+                    <h4>Remember the Limits!</h4>
+                    <p><strong>Free Gmail:</strong> 100 emails per day<br>
+                    <strong>Google Workspace:</strong> 1,500 emails per day<br>
+                    Don't send more than your limit or you'll be blocked temporarily!</p>
+                </div>
+            </div>
+
+            <div class="page-nav">
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+                <a href="code-breakdown.html" class="btn">Code Breakdown</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Learn to Code Class | Gmail Newsletter Tutorial</p>
+    </footer>
+</body>
+</html>

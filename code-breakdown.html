@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Breakdown | Gmail Newsletter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Gmail Newsletter Tutorial</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="tutorial.html">Step-by-Step</a></li>
+            <li><a href="code-breakdown.html" class="active">Code Breakdown</a></li>
+            <li><a href="playground.html">Live Playground</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Code Breakdown</h1>
+            <p class="subtitle">Understanding every part of the Gmail newsletter script</p>
+        </section>
+
+        <!-- Google Apps Script Section -->
+        <section class="breakdown-section">
+            <h2>Google Apps Script Basics</h2>
+            <p>Google Apps Script is JavaScript that runs on Google's servers. It can interact with Gmail, Sheets, Docs, and more!</p>
+
+            <div class="code-line">
+                <span class="line-number">1</span>
+                <div class="line-code">const CONFIG = { senderName: "Your Name", ... };</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Configuration Object</strong> - We store settings in one place so they're easy to find and change. This is a common coding pattern called "configuration at the top."
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">2</span>
+                <div class="line-code">function sendNewsletter() { ... }</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Function Declaration</strong> - A function is a reusable block of code. <code>sendNewsletter</code> is the name we give it. When we call this function, all the code inside <code>{ }</code> runs.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">3</span>
+                <div class="line-code">SpreadsheetApp.getActiveSpreadsheet()</div>
+            </div>
+            <div class="line-explanation">
+                <strong>SpreadsheetApp</strong> - This is a built-in Google Apps Script service. It lets you interact with Google Sheets. <code>getActiveSpreadsheet()</code> gets the spreadsheet where the script lives.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">4</span>
+                <div class="line-code">.getSheetByName(CONFIG.sheetName)</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Method Chaining</strong> - We can call methods one after another using dots. This gets a specific sheet tab by its name (like "Sheet1").
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">5</span>
+                <div class="line-code">sheet.getDataRange().getValues()</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Getting Data</strong> - <code>getDataRange()</code> selects all cells with data. <code>getValues()</code> returns a 2D array (array of arrays) containing the cell values.
+                <br><br>
+                Example result: <code>[["email", "name", "date", "status"], ["alex@email.com", "Alex", "2024-01-15", "Active"]]</code>
+            </div>
+        </section>
+
+        <!-- Loop and Conditions -->
+        <section class="breakdown-section">
+            <h2>Looping Through Subscribers</h2>
+            <p>We need to send an email to each subscriber. Loops let us repeat code for each row.</p>
+
+            <div class="code-line">
+                <span class="line-number">6</span>
+                <div class="line-code">for (let i = 1; i < data.length; i++) { ... }</div>
+            </div>
+            <div class="line-explanation">
+                <strong>For Loop</strong> - Repeats code a specific number of times.
+                <ul>
+                    <li><code>let i = 1</code> - Start at 1 (skip header row at index 0)</li>
+                    <li><code>i < data.length</code> - Keep going while i is less than total rows</li>
+                    <li><code>i++</code> - Add 1 to i after each loop</li>
+                </ul>
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">7</span>
+                <div class="line-code">const email = data[i][0];</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Accessing Array Values</strong> - <code>data[i]</code> gets row i. <code>data[i][0]</code> gets the first column (email). Arrays are "zero-indexed" - the first item is at position 0.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">8</span>
+                <div class="line-code">const name = data[i][1] || "there";</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Default Value with ||</strong> - The <code>||</code> operator means "or". If <code>data[i][1]</code> is empty/null, use "there" instead. This prevents "Hi undefined" if someone didn't give their name.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">9</span>
+                <div class="line-code">if (status === "Active" && email && email.includes("@")) { ... }</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Conditional Check</strong> - Only run the code inside if ALL conditions are true:
+                <ul>
+                    <li><code>status === "Active"</code> - Only send to active subscribers</li>
+                    <li><code>email</code> - Email is not empty</li>
+                    <li><code>email.includes("@")</code> - Email contains @ symbol</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Sending Email -->
+        <section class="breakdown-section">
+            <h2>Sending the Email</h2>
+            <p>Gmail App is another Google service that lets us send emails programmatically.</p>
+
+            <div class="code-line">
+                <span class="line-number">10</span>
+                <div class="line-code">const personalizedBody = htmlBody.replace("{{NAME}}", name);</div>
+            </div>
+            <div class="line-explanation">
+                <strong>String Replace</strong> - <code>.replace()</code> finds text and swaps it with something else. Here we replace the placeholder <code>{{NAME}}</code> with the subscriber's actual name. This is called "personalization."
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">11</span>
+                <div class="line-code">GmailApp.sendEmail(email, subject, "", { htmlBody: personalizedBody });</div>
+            </div>
+            <div class="line-explanation">
+                <strong>GmailApp.sendEmail()</strong> - The magic function that sends email!
+                <ul>
+                    <li><code>email</code> - Recipient's email address</li>
+                    <li><code>subject</code> - Email subject line</li>
+                    <li><code>""</code> - Plain text body (empty because we use HTML)</li>
+                    <li><code>{ htmlBody: ... }</code> - Options object with HTML content</li>
+                </ul>
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">12</span>
+                <div class="line-code">try { ... } catch (e) { errors.push(email + ": " + e.message); }</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Error Handling</strong> - <code>try/catch</code> prevents one bad email from crashing the whole script. If an error occurs (invalid email, etc.), we catch it and save the error message instead of stopping.
+            </div>
+        </section>
+
+        <!-- HTML Email Content -->
+        <section class="breakdown-section">
+            <h2>HTML Email Content</h2>
+            <p>Emails can contain HTML for formatting. Here's how we structure it.</p>
+
+            <div class="code-line">
+                <span class="line-number">13</span>
+                <div class="line-code">const htmlBody = `&lt;h1&gt;Welcome!&lt;/h1&gt;...`;</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Template Literal</strong> - The backticks <code>`</code> let us write multi-line strings and embed variables with <code>${variable}</code>. Much easier than concatenating strings with +.
+            </div>
+
+            <div class="code-block">
+<pre><code>&lt;h1&gt;Welcome to My Newsletter!&lt;/h1&gt;      <span class="code-comment">&lt;!-- Big heading --&gt;</span>
+&lt;p&gt;Hi {{NAME}},&lt;/p&gt;                      <span class="code-comment">&lt;!-- Personalized greeting --&gt;</span>
+&lt;ul&gt;                                     <span class="code-comment">&lt;!-- Unordered list --&gt;</span>
+    &lt;li&gt;Update #1&lt;/li&gt;                   <span class="code-comment">&lt;!-- List item --&gt;</span>
+&lt;/ul&gt;
+&lt;hr&gt;                                     <span class="code-comment">&lt;!-- Horizontal line --&gt;</span>
+&lt;small&gt;Unsubscribe info&lt;/small&gt;          <span class="code-comment">&lt;!-- Small text --&gt;</span></code></pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>Email HTML Tips</h4>
+                <p>Email HTML is limited compared to web pages. Stick to basic tags like <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;a&gt;</code>, and inline styles. Avoid CSS files or complex layouts.</p>
+            </div>
+        </section>
+
+        <!-- Menu and Web App -->
+        <section class="breakdown-section">
+            <h2>Custom Menu & Web App</h2>
+            <p>These features make your script user-friendly and accessible from websites.</p>
+
+            <div class="code-line">
+                <span class="line-number">14</span>
+                <div class="line-code">function onOpen() { ... }</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Special Function Name</strong> - <code>onOpen</code> is a "trigger" - Google automatically runs it when the spreadsheet opens. We use it to add our custom menu.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">15</span>
+                <div class="line-code">SpreadsheetApp.getUi().createMenu('Newsletter').addItem('Send', 'sendNewsletter').addToUi();</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Creating a Menu</strong> - This chain of methods:
+                <ul>
+                    <li><code>getUi()</code> - Gets the user interface</li>
+                    <li><code>createMenu('Newsletter')</code> - Creates menu with that name</li>
+                    <li><code>addItem('Send', 'functionName')</code> - Adds clickable item</li>
+                    <li><code>addToUi()</code> - Actually shows the menu</li>
+                </ul>
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">16</span>
+                <div class="line-code">function doPost(e) { ... }</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Web App Endpoint</strong> - When deployed as a web app, <code>doPost</code> handles incoming POST requests (like form submissions). The <code>e</code> parameter contains the request data.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">17</span>
+                <div class="line-code">const data = JSON.parse(e.postData.contents);</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Parsing JSON</strong> - Form data comes as a JSON string. <code>JSON.parse()</code> converts it to a JavaScript object we can use, like <code>{ name: "Alex", email: "alex@email.com" }</code>.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">18</span>
+                <div class="line-code">sheet.appendRow([data.email, data.name, new Date()..., "Active"]);</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Adding a Row</strong> - <code>appendRow()</code> adds a new row at the bottom of the sheet. We pass an array where each item becomes a cell value.
+            </div>
+        </section>
+
+        <!-- JavaScript Form -->
+        <section class="breakdown-section">
+            <h2>The Signup Form JavaScript</h2>
+            <p>This code runs in the browser and sends data to your Google Apps Script.</p>
+
+            <div class="code-line">
+                <span class="line-number">19</span>
+                <div class="line-code">document.getElementById('subscribeForm').addEventListener('submit', async function(e) { ... });</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Event Listener</strong> - We find our form by ID, then "listen" for the submit event. When someone clicks Subscribe, our function runs. The <code>async</code> keyword lets us use <code>await</code> inside.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">20</span>
+                <div class="line-code">e.preventDefault();</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Prevent Default</strong> - Normally, forms refresh the page when submitted. This stops that behavior so we can handle the submission with JavaScript instead.
+            </div>
+
+            <div class="code-line">
+                <span class="line-number">21</span>
+                <div class="line-code">await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ name, email }) });</div>
+            </div>
+            <div class="line-explanation">
+                <strong>Fetch API</strong> - <code>fetch()</code> sends HTTP requests. We POST our form data to the Apps Script URL. <code>await</code> pauses until the request completes.
+                <ul>
+                    <li><code>method: 'POST'</code> - Send data (vs GET which retrieves)</li>
+                    <li><code>mode: 'no-cors'</code> - Needed for cross-origin requests</li>
+                    <li><code>body: JSON.stringify(...)</code> - Convert data to JSON string</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Quick Reference -->
+        <section class="breakdown-section">
+            <h2>Quick Reference</h2>
+            <div class="reference-grid">
+                <div class="reference-card">
+                    <h4>Google Services Used</h4>
+                    <p>
+                        <code>SpreadsheetApp</code> - Google Sheets<br>
+                        <code>GmailApp</code> - Send emails<br>
+                        <code>ContentService</code> - Web responses
+                    </p>
+                </div>
+                <div class="reference-card">
+                    <h4>Key Array Methods</h4>
+                    <p>
+                        <code>.getValues()</code> - Get sheet data<br>
+                        <code>.appendRow()</code> - Add new row<br>
+                        <code>.push()</code> - Add to array
+                    </p>
+                </div>
+                <div class="reference-card">
+                    <h4>String Methods</h4>
+                    <p>
+                        <code>.replace()</code> - Swap text<br>
+                        <code>.includes()</code> - Check if contains<br>
+                        <code>.split()</code> - Break into array
+                    </p>
+                </div>
+                <div class="reference-card">
+                    <h4>Special Functions</h4>
+                    <p>
+                        <code>onOpen()</code> - Runs when sheet opens<br>
+                        <code>doPost(e)</code> - Handles POST requests<br>
+                        <code>doGet(e)</code> - Handles GET requests
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-nav">
+            <a href="tutorial.html" class="btn btn-secondary">Back to Tutorial</a>
+            <a href="playground.html" class="btn">Try Live Playground</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>Learn to Code Class | Gmail Newsletter Tutorial</p>
+    </footer>
+</body>
+</html>
